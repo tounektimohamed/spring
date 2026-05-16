@@ -1,0 +1,50 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: springpath
+      POSTGRES_USER: ${DB_USER:-springpath}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change_me_in_production}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-springpath}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - springpath-net
+
+  backend:
+    build: ./backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      DB_URL: jdbc:postgresql://postgres:5432/springpath
+      DB_USER: ${DB_USER:-springpath}
+      DB_PASSWORD: ${DB_PASSWORD:-change_me_in_production}
+      JWT_SECRET: ${JWT_SECRET:-minimum_32_characters_random_string_here_123456}
+    ports:
+      - "8080:8080"
+    networks:
+      - springpath-net
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - springpath-net
+
+volumes:
+  postgres_data:
+
+networks:
+  springpath-net:
+    driver: bridge

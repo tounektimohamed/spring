@@ -1,0 +1,107 @@
+spring:
+  application:
+    name: springpath
+
+  profiles:
+    active: dev
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+    open-in-view: false
+
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:springpath;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE;MODE=PostgreSQL
+    username: sa
+    password:
+
+  flyway:
+    enabled: false
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+server:
+  port: ${PORT:8080}
+  error:
+    include-stacktrace: never
+    include-message: always
+    include-binding-errors: always
+
+app:
+  jwt:
+    secret: ${JWT_SECRET}
+    access-token-expiry: 900000
+    refresh-token-expiry: 604800000
+  code-runner:
+    max-execution-seconds: 5
+    max-memory-mb: 64
+    sandbox-dir: /tmp/sandbox
+  rate-limit:
+    code-run:
+      capacity: 10
+      refill-tokens: 10
+      refill-minutes: 1
+
+springdoc:
+  api-docs:
+    path: /api/docs-json
+  swagger-ui:
+    path: /api/docs
+    tags-sorter: alpha
+    operations-sorter: alpha
+  show-actuator: false
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+      base-path: /actuator
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${DB_URL}
+    username: ${DB_USER}
+    password: ${DB_PASSWORD}
+
+  flyway:
+    enabled: false
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+# ✅ application.yml — complete

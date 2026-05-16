@@ -1,0 +1,61 @@
+name: SpringPath CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  backend-test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: springpath
+          POSTGRES_USER: springpath
+          POSTGRES_PASSWORD: test_pass
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+      - name: Build Backend
+        working-directory: backend
+        run: mvn test -B
+        env:
+          DB_URL: jdbc:postgresql://localhost:5432/springpath
+          DB_USER: springpath
+          DB_PASSWORD: test_pass
+          JWT_SECRET: gh_actions_test_secret_at_least_32_chars_ok
+
+  frontend-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install & Typecheck
+        working-directory: frontend
+        run: |
+          npm ci --legacy-peer-deps
+          npm run lint
+
+  docker-build:
+    needs: [backend-test, frontend-test]
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Docker images
+        run: docker compose build
