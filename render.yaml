@@ -3,6 +3,7 @@ services:
     name: springpath-api
     env: docker
     dockerfilePath: ./backend/Dockerfile.render
+    plan: starter
     envVars:
       - key: SPRING_PROFILES_ACTIVE
         value: prod
@@ -21,11 +22,9 @@ services:
           name: springpath-db
           property: password
     healthCheckPath: /actuator/health
-    plan: free
 
-  - type: web
+  - type: static
     name: springpath-frontend
-    env: static
     buildCommand: cd frontend && npm ci --legacy-peer-deps && npm run build
     staticPublishPath: ./frontend/dist
     routes:
@@ -38,7 +37,6 @@ services:
     envVars:
       - key: VITE_API_URL
         value: https://springpath-api.onrender.com
-    plan: free
 
 databases:
   - name: springpath-db
