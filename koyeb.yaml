@@ -1,0 +1,26 @@
+name: springpath-api
+service:
+  type: web
+  runtime: docker
+  docker:
+    dockerfile: ./backend/Dockerfile.koyeb
+  ports:
+    - port: 8080
+      protocol: http
+  env:
+    - key: SPRING_PROFILES_ACTIVE
+      value: prod
+    - key: JAVA_TOOL_OPTIONS
+      value: "-Xmx200m -Xms64m"
+    - key: DB_URL
+      type: secret
+      value: db-url
+    - key: DB_USER
+      value: springpath_db_user
+    - key: DB_PASSWORD
+      type: secret
+      value: db-password
+    - key: JWT_SECRET
+      type: secret
+      value: jwt-secret
+  instance_type: nano
