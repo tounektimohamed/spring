@@ -23,21 +23,6 @@ services:
           property: password
     healthCheckPath: /actuator/health
 
-  - type: static
-    name: springpath-frontend
-    buildCommand: cd frontend && npm ci --legacy-peer-deps && npm run build
-    staticPublishPath: ./frontend/dist
-    routes:
-      - type: rewrite
-        source: /api/*
-        destination: https://springpath-api.onrender.com/api/*
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    envVars:
-      - key: VITE_API_URL
-        value: https://springpath-api.onrender.com
-
 databases:
   - name: springpath-db
     plan: free
