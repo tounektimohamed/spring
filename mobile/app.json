@@ -4,26 +4,13 @@
     "slug": "springpath",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
     "userInterfaceStyle": "dark",
     "backgroundColor": "#0A0F1E",
-    "splash": {
-      "image": "./assets/splash.png",
-      "resizeMode": "contain",
-      "backgroundColor": "#0A0F1E"
-    },
     "ios": {
       "supportsTablet": true
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0A0F1E"
-      },
       "package": "com.springpath.mobile"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png"
     }
   }
 }

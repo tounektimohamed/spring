@@ -24,3 +24,5 @@ Thumbs.db
 
 # Docker
 postgres_data/
+mobile/node_modules/
+mobile/dist/
